@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="一点知识">
 <meta property="og:description" content="问题想要通过OGG方式实现正式库的修改数据同步到备库中前提：    Oracle 10g OGG服务已安装 两个数据库已有相同用户 待同步的表已完成主备一致  知识点 问题1：连接备库时，报ora-12514 监听程序无法识别连接操作符中请求的服务解决：查看$ORACLE_HOME/network/admin目录下没有listener.ora文件，参考其他数据库主机配置，新建了该文件，并写入以下内">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-10T16:41:10.524Z">
+<meta property="og:updated_time" content="2018-02-24T07:26:49.473Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OGG服务同步数据">
 <meta name="twitter:description" content="问题想要通过OGG方式实现正式库的修改数据同步到备库中前提：    Oracle 10g OGG服务已安装 两个数据库已有相同用户 待同步的表已完成主备一致  知识点 问题1：连接备库时，报ora-12514 监听程序无法识别连接操作符中请求的服务解决：查看$ORACLE_HOME/network/admin目录下没有listener.ora文件，参考其他数据库主机配置，新建了该文件，并写入以下内">
@@ -383,6 +383,12 @@ stop *
 stop mgr
 </code></pre></li>
 <li><p>问题5：OGG服务启动后，修改正式库表记录，但备库未同步<br>解决：由于replicat服务ABENDED导致不同步，需要修改读检查点和写检查点，尚未完成学习</p>
+</li>
+<li><p>问题6：replicat服务ABENDED<br>解决：通过以下命令找到出问题的点：</p>
+<pre><code>info all
+info REP_group #REP_group为要查询的REPLICAT的GROUP名
+sh more ggserr.log #查看日志文件
+</code></pre><p>可以键入v进入vim视图，通过G来到达最后一行查看最近报错信息。</p>
 </li>
 </ul>
 <h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a href="http://blog.csdn.net/u013519551/article/details/53485342" target="_blank" rel="noopener">ORA-01034和ORA-27101的解决方法</a><br><a href="http://blog.sina.com.cn/s/blog_6f7b73770101b6l5.html" target="_blank" rel="noopener">解决 ORA-12514: TNS: 监听程序当前无法识别连接描述符中请求的服务</a><br><a href="http://blog.csdn.net/eviswang/article/details/51034727" target="_blank" rel="noopener">./ggsci: error while loading shared libraries: libnnz11.so: cannot open shared object file: No such</a>  </p>
