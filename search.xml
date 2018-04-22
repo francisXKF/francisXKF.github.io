@@ -3,6 +3,27 @@
   
     
     <entry>
+      <title>监控平台-概述</title>
+      <link href="/2018/04/22/%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0-%E6%A6%82%E8%BF%B0/"/>
+      <url>/2018/04/22/%E7%9B%91%E6%8E%A7%E5%B9%B3%E5%8F%B0-%E6%A6%82%E8%BF%B0/</url>
+      <content type="html"><![CDATA[<p>监控平台工程的总体描述，主要是对工程各层框架的描述与使用到的技术；钉钉微应用的相关知识；平台现已实现功能；并以一个功能为例讲述实现方式。<br><a id="more"></a></p><h2 id="各层框架"><a href="#各层框架" class="headerlink" title="各层框架"></a>各层框架</h2><p>现在工程主要分为：前台、服务器端、数据整理脚本。</p><h3 id="1-前台"><a href="#1-前台" class="headerlink" title="1. 前台"></a>1. 前台</h3><p>前台包括PC端浏览器前台与钉钉微应用前台。  </p><ol><li>PC端前台</li></ol><p>PC端前台包括1.0的界面与2.0界面。<br>1.0界面主要使用了<code>jQuery</code>库完成的前台渲染以及前后台交互。<br>2.0界面主要使用<code>React</code>对1.0界面进行了优化与新增功能开发。<br>若想要开发PC端浏览器前台，建议了解<code>HTML</code>、<code>CSS</code>、<code>Ajax</code>相关知识，掌握<code>jQuery</code>或者<code>React</code>的基本知识。</p><ol><li>钉钉微应用前台</li></ol><p>钉钉微应用前台还处于摸索开发阶段。<br>现阶段主要使用了React进行界面开发，部分功能涉及到调用钉钉API<br>若想要开发钉钉微应用前台，除原PC端相关知识外，需要学习钉钉微应用API</p><h3 id="2-服务器端"><a href="#2-服务器端" class="headerlink" title="2. 服务器端"></a>2. 服务器端</h3><p>服务器端主要包括使用Java进行后台逻辑处理、Tomcat作为服务器。<br>使用JavaEE的<code>struts</code>框架对前台的请求进行响应。通过读取日志文件或者连接<code>Oracle</code>库进行数据查询。<br>进行后台开发，了解java、Oracle数据库操作。</p><h3 id="3-数据整理脚本"><a href="#3-数据整理脚本" class="headerlink" title="3. 数据整理脚本"></a>3. 数据整理脚本</h3><p>数据整理脚本主要包括定时执行的监控脚本与相关信息的整理脚本。<br>主要使用<code>bash shell</code>与<code>python</code>进行相关脚本的编写</p><h2 id="钉钉微应用"><a href="#钉钉微应用" class="headerlink" title="钉钉微应用"></a>钉钉微应用</h2><p>着重进行钉钉微应用相关知识分享</p><h2 id="已实现功能"><a href="#已实现功能" class="headerlink" title="已实现功能"></a>已实现功能</h2><p>包括：主机24小时CPU、内存、存储的使用情况监控；省间话单文件处理状态监控；2I2C、冰激凌等接口文件监控；省间文件级统计情况监控等。具体功能可以登录前台页面查看各页面的展示。</p><h2 id="单个功能实现流程"><a href="#单个功能实现流程" class="headerlink" title="单个功能实现流程"></a>单个功能实现流程</h2><p>以省间文件级统计功能为例：</p><ol><li>编写<code>statStatusCheck.py</code>脚本，调用用来进行文件级统计信息查询的<code>.sql</code>文件进行数据查询，并将查询结果形成落地日志文件。</li><li>使用crontab定时执行<code>statStatusCheck.py</code>脚本完成每日文件级统计监控</li><li>使用<code>React</code>编写该功能的<code>.jsx</code>文件，或者是<code>jQuery</code>的<code>js</code>代码，完成前台界面的样式。</li><li>在<code>.jsx</code>或者<code>js</code>中增加ajax请求，进行前后台交互。</li><li>编写后台代码，包括对应的<code>action</code>、dao、daoImpl的java代码，通过读取日志文件，将结果整理后返回至前台</li><li>前台完成相应结果展示</li></ol><p>PC端与钉钉微应用的区别：</p><h2 id="各架构具体技术实现方式"><a href="#各架构具体技术实现方式" class="headerlink" title="各架构具体技术实现方式"></a>各架构具体技术实现方式</h2><h3 id="前台"><a href="#前台" class="headerlink" title="前台"></a>前台</h3><ul><li>使用<code>HTML</code>、<code>CSS</code>进行界面展示</li><li>使用<code>Ajax</code>进行前后台数据交互（同步/异步）</li><li>使用<code>jQuery</code>或者<code>React</code>框架进行整合完成与用户的交互</li><li>使用<code>React</code>时，使用部分ES6语法，通过<code>webpack</code>后台打包方式完成JSX ES6语法转化</li><li>对于钉钉微应用，通过js调用钉钉API进行微应用鉴权、获取用户信息等。</li></ul><h3 id="服务器端"><a href="#服务器端" class="headerlink" title="服务器端"></a>服务器端</h3><ul><li>主要分为Action层，dao层、dao实现层、pojo以及工具类</li><li>使用JavaEE的<code>struts</code>框架作为控制器完成对前后台数据的交互。</li><li>使用<code>ojdbc</code>连接Oracle库进行增删改查。</li><li>使用<code>Tomcat</code>作为服务器容器。</li></ul><h3 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h3><ul><li>python、bash shell选择使用，建议使用python</li><li>python使用sqlplus或者cx_oracle连接数据库，建议使用cx_oracle</li><li>使用crontab进行监控脚本定时</li></ul><h3 id="钉钉"><a href="#钉钉" class="headerlink" title="钉钉"></a>钉钉</h3><ul><li>使用python的socket暴露主机端口进行客户端与服务器端通信</li><li>使用钉钉自定义机器人自动发送钉钉群信息，具体方法有封装好的函数</li><li>使用钉钉API相关接口（包括jsapi与服务器端api）进行钉钉微应用的开发。</li></ul>]]></content>
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 设计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>Echarts-tooltip</title>
       <link href="/2018/04/08/Echarts-tooltip/"/>
       <url>/2018/04/08/Echarts-tooltip/</url>
