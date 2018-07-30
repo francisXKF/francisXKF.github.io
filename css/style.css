@@ -18,7 +18,7 @@ html, button, input, select, textarea,
   font-family: "PingFangSC-Regular", Helvetica, "Helvetica Neue", "Segoe UI", "Hiragino Sans GB", "Source Han Sans CN", "Microsoft YaHei", "STHeiti", "WenQuanYi Micro Hei", sans-serif !important; }
 
 body {
-  background-color: #FFF;
+  background-color: #EEEED5;
   color: #444;
   font-family: "TIBch", "Classic Grotesque W01", "Helvetica Neue", Arial, "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "WenQuanYi Micro Hei", SimSun, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1453,3 +1453,19 @@ em.search-keyword {
   color: #fff;
   background-color: #999999;
   text-shadow: 0; }
+
+/* license */
+.license-content {
+  font-size: 15px;
+  line-height: 1.77;
+  color: #444; }
+  .license-content a {
+    color: #01579f;
+    word-break: normal; }
+    .license-content a:hover {
+      text-decoration: underline; }
+
+.license-space {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px; }
