@@ -237,7 +237,7 @@ div {
         display: inline-block;
         margin: 0 5px;
         padding: 0 5px;
-        background: #f7f8f8; }
+        background: #FFC0CB; }
       .post .post-content p a {
         color: #01579f;
         padding-bottom: 2px;
@@ -258,9 +258,9 @@ div {
       position: relative; }
     .post .post-content img {
       max-width: 100%;
-      padding: 0.5em 0;
+      padding: 0;
       margin: auto;
-      display: block; }
+      display: inline; }
     .post .post-content ul, .post .post-content ol {
       border-radius: 3px;
       margin: 1em 0; }
@@ -379,12 +379,12 @@ blockquote, .stressed {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin: 2.5em 0;
-  padding: 0 0 0 50px;
+  padding: 0 0 0 10px;
   color: #555;
-  border-left: none; }
+  background: #F9F9F9;
+  border-left: 4px solid #b4b4b4; }
 
 blockquote::before, .stressed-quote::before {
-  content: "\201C";
   display: block;
   font-family: times;
   font-style: normal;
