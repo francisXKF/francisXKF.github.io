@@ -3,6 +3,27 @@
   
     
     <entry>
+      <title>阿里云使用记-ECS</title>
+      <link href="/2018/08/16/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BD%BF%E7%94%A8%E8%AE%B0-ECS/"/>
+      <url>/2018/08/16/%E9%98%BF%E9%87%8C%E4%BA%91%E4%BD%BF%E7%94%A8%E8%AE%B0-ECS/</url>
+      <content type="html"><![CDATA[<p>对阿里云云服务器ECS使用方案<br><a id="more"></a></p><h3 id="何为云服务器ECS"><a href="#何为云服务器ECS" class="headerlink" title="何为云服务器ECS"></a>何为云服务器ECS</h3><p>云服务器Elastic Computer Service，使用者可以随时创建所需数量的ECS实例，在使用过程中可以随时对资源进行扩缩。<br>ECS涉及到的资源有：</p><ul><li>实例规格</li><li>块存储</li><li>镜像</li><li>宽带</li><li>安全组</li></ul><h4 id="相关概念"><a href="#相关概念" class="headerlink" title="相关概念"></a>相关概念</h4><ul><li>地域和可用区</li><li>实例  等同于一台虚拟机，包括：内存、CPU、磁盘、宽带等</li><li>实例规格  指实例配置的规格，例如vCPU核数、内存大小等</li><li>镜像 一般包括操作系统与预装软件</li><li>块存储 包括基于分布式存储架构的云盘和共享块存储，以及本地硬盘的本地存储</li><li>快照 指某一个时间点上弹性块存储的数据备份</li><li>网络类型 包括专有网络VPC与经典网络</li><li>安全组 由同一地域具有相同保护需求并互相信任的实例组成，是一种虚拟防火墙，用于控制不同实例的网络访问</li></ul><h4 id="相关服务"><a href="#相关服务" class="headerlink" title="相关服务"></a>相关服务</h4><ul><li>云市场</li><li>弹性伸缩</li><li>容器服务 通过Docker管理应用生命周期</li><li>均衡负载 对多台ESC进行流量分发与负载均衡服务</li><li>云监控</li><li>安骑士</li><li>DDos防护</li><li>阿里云开发工具包</li></ul><h3 id="ECS的优势"><a href="#ECS的优势" class="headerlink" title="ECS的优势"></a>ECS的优势</h3><p>具有以下优势：高可用性、安全性、弹性</p><h4 id="高可用性"><a href="#高可用性" class="headerlink" title="高可用性"></a>高可用性</h4><p>更严格的IDC（互联网数据中心）标准、服务器准入标准、以及运维标准，以保证云计算整个基础框架的高可用性、数据的可靠性以及云服务器的高可用性。<br>利用阿里云多可用区进行主备服务、双活服务、金融领域两地三中心<br>数据迁移服务DTS</p><h4 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h4><p>阿里云专有网络<br>阿里云专有网络可以拉专线到原有的IDC机房，形成混合云的架构<br>阿里云专有网络具有稳定性与安全性，专有网络天然就具备流量隔离以及攻击格力的能力</p><h4 id="弹性"><a href="#弹性" class="headerlink" title="弹性"></a>弹性</h4><ul><li>计算弹性<ul><li>纵向的弹性，单个服务器的配置变更</li><li>横向弹性，增加更多的资源</li></ul></li><li>存储弹性<br>传统IDC，需要不断增加服务器，而服务器是有限的，在阿里云，可以不断购买存储，进行磁盘扩容</li><li>网络弹性<br>阿里云专有网络，所有网络配置，可以与线下的IDC机房配置完全相同</li></ul><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>结合OSS（对象存储），将静态图片、视频、下载包进行存储，以降低存储费用<br>配合CDN进行负载均衡<br>可以启用弹性伸缩</p><h3 id="实例规格族"><a href="#实例规格族" class="headerlink" title="实例规格族"></a>实例规格族</h3><h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p>官方文档</p>]]></content>
+      
+      <categories>
+          
+          <category> 架构 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 设计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>JDK源码阅读记-Object</title>
       <link href="/2018/07/10/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%AE%B0-Object/"/>
       <url>/2018/07/10/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E8%AE%B0-Object/</url>
