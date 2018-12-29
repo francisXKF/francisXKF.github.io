@@ -3,6 +3,29 @@
   
     
     <entry>
+      <title>JS-参数对象新增方法</title>
+      <link href="/2018/12/29/JS-%E5%8F%82%E6%95%B0%E5%AF%B9%E8%B1%A1%E6%96%B0%E5%A2%9E%E6%96%B9%E6%B3%95/"/>
+      <url>/2018/12/29/JS-%E5%8F%82%E6%95%B0%E5%AF%B9%E8%B1%A1%E6%96%B0%E5%A2%9E%E6%96%B9%E6%B3%95/</url>
+      <content type="html"><![CDATA[<p>通常情况下，不会对函数中传入的参数进行修改操作，但是在编写通用函数，对元素进行新增方法（事件）的时候，可能会使用对参数的修改从而实现在引用对象上新增方法（事件）。</p><a id="more"></a><h1 id="基本方法"><a href="#基本方法" class="headerlink" title="基本方法"></a>基本方法</h1><p>直接将要新增的方法（事件）添加到元素上：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addHandler</span>(<span class="params">element, type, handler</span>) </span>&#123;</span><br><span class="line">element[<span class="string">`on<span class="subst">$&#123;type&#125;</span>`</span>] = handler</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hohoho</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">alert(<span class="string">'ohHoHoHo'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Btn = &#123;</span><br><span class="line">color: <span class="string">'blue'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">addHandler(Btn, <span class="string">'Say'</span>, hohoho);</span><br><span class="line"></span><br><span class="line">Btn.onSay();</span><br></pre></td></tr></table></figure></p><p>输出结果为：onHoHoHo弹窗</p><p>该方法执行没问题，但是在ESLint中配置了<strong>禁止对函数参数再赋值 (no-param-reassign)</strong>时，上面代码会报错。<br><code>no-param-reassign</code>规范如下：</p><blockquote><p>对函数参数中的变量进行赋值可能会误导读者，导致混乱，也会改变 arguments 对象。通常，对函数参数进行赋值并非有意为之，更多的是程序员的书写错误做成的。<br>当函数参数被修改时，该规则也可能会失效。由此造成的副作用可能导致不直观的执行流程，使错误难以跟踪。</p></blockquote><p>下面有两种方式可以算很取巧的避免检测……</p><ol><li>临时对象方式–会多创建一个引用。  </li><li>defineProperty方法–会修改原对象属性。</li></ol><h1 id="临时对象"><a href="#临时对象" class="headerlink" title="临时对象"></a>临时对象</h1><p>虽然函数参数传递都是按值传递，但是element还是会按引用访问同一个对象，所以可以通过将参数赋值给临时对象，在临时对象上增加属性来避免报错。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addHandler2</span>(<span class="params">element, type, handler</span>) </span>&#123;</span><br><span class="line"><span class="keyword">const</span> ele = element;</span><br><span class="line">ele[<span class="string">`on<span class="subst">$&#123;type&#125;</span>`</span>] = handler</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hohoho</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">alert(<span class="string">'ohHoHoHo'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Btn2 = &#123;</span><br><span class="line">color: <span class="string">'blue'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">addHandler2(Btn2, <span class="string">'Say'</span>, hohoho);</span><br><span class="line">Btn2.onSay();</span><br></pre></td></tr></table></figure></p><h1 id="defineProperty方法"><a href="#defineProperty方法" class="headerlink" title="defineProperty方法"></a>defineProperty方法</h1><p>使用ES5提供的属性定义方法修改传入对象<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addHandler1</span>(<span class="params">element, type, handler</span>) </span>&#123;</span><br><span class="line"><span class="built_in">Object</span>.defineProperty(element, <span class="string">`on<span class="subst">$&#123;type&#125;</span>`</span>, &#123;</span><br><span class="line">  value: handler</span><br><span class="line">&#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hohoho</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">alert(<span class="string">'ohHoHoHo'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Btn1 = &#123;</span><br><span class="line">color: <span class="string">'blue'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">addHandler1(Btn1, <span class="string">'Say'</span>, hohoho);</span><br><span class="line">Btn1.onSay();</span><br></pre></td></tr></table></figure></p><p>如果有必要，可以设置新增属性的<code>configurable</code>、<code>enumerable</code>、<code>writable</code>，如果不指定，这三个都为<code>false</code>。</p><h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>js中参数按值传递，该规则的目的可理解为避免误将普通变量参数赋值导致与代码预期不一致，或者是修改了对象参数导致arguments改变，使得可读性变差。可以参考<a href="https://github.com/airbnb/javascript/issues/766" target="_blank" rel="noopener">aribnb issue #766</a><br>但另一方面，例如在js红宝书中建立通用方法，对元素增加绑定事件时，使用了直接修改参数的方法。虽然违背了该规则，但是没有造成明显弊端，对此可以单独配置在该方法中此规则失效。</p><h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://eslint.bootcss.com/docs/rules/no-param-reassign/" target="_blank" rel="noopener">ESLint 禁止对函数参数再赋值 (no-param-reassign)</a><br><a href="https://stackoverflow.com/questions/35637770/how-to-avoid-no-param-reassign-when-setting-a-property-on-a-dom-object" target="_blank" rel="noopener">How to avoid no-param-reassign when setting a property on a DOM object</a><br><a href="https://github.com/airbnb/javascript/issues/766" target="_blank" rel="noopener">How to deal with DOM manipulation #766</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 前端 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> js </tag>
+            
+            <tag> ESLint </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>JS-创建对象</title>
       <link href="/2018/12/17/JS-%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1/"/>
       <url>/2018/12/17/JS-%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1/</url>
@@ -129,6 +152,8 @@
         <tags>
             
             <tag> js </tag>
+            
+            <tag> ESLint </tag>
             
         </tags>
       
@@ -631,26 +656,9 @@
       
         <tags>
             
-            <tag> GitHub </tag>
-            
             <tag> Hexo </tag>
             
-        </tags>
-      
-    </entry>
-    
-    <entry>
-      <title>lambda实现switch</title>
-      <link href="/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/"/>
-      <url>/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/</url>
-      <content type="html"><![CDATA[<p>根据输入的条件符号，对两个输入的数字进行表达式判断<br><a id="more"></a></p><h3 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h3><p>查了查网上资料，总体有三种方案实现：<br>1、<strong>字典+函数</strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">funcA</span><span class="params">(x)</span></span><span class="symbol">:</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line">...</span><br><span class="line">funcDict&#123;</span><br><span class="line">    <span class="string">'A'</span> : funcA,</span><br><span class="line">    <span class="string">'B'</span> : funcB,</span><br><span class="line">    <span class="string">'C'</span> : funcC</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line">funcDict.get(value, funcDefault)(x)</span><br></pre></td></tr></table></figure></p><p>2、<strong>字典+lambda</strong><br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lambdaDict&#123;</span><br><span class="line"><span class="code">    'A' : lambda x : x,</span></span><br><span class="line"><span class="code">    'B' : lambda x : x,</span></span><br><span class="line"><span class="code">    'C' : lambda x : x</span></span><br><span class="line">&#125;[<span class="string">value</span>](<span class="link">x</span>)</span><br></pre></td></tr></table></figure></p><p>3、Brian Beck提供了一个类 switch 来实现其他语言中switch的功能</p><p>由于要实现的功能是两个数之间根据输入的表达式来进行比较，所以选择了写起来比较简洁（自认为简洁）的lambda<br><strong>样例</strong><br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def opJudge(processCnt, op, expectCnt):</span><br><span class="line">    judgeAns = &#123;</span><br><span class="line">        <span class="string">'='</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> == y,</span><br><span class="line">        <span class="string">'&gt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt; y,</span><br><span class="line">        <span class="string">'&lt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt; y,</span><br><span class="line">        '&gt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt;= y,</span><br><span class="line">        '&lt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt;= y,</span><br><span class="line">        '!=' : <span class="type">lambda</span> x, y : <span class="type">x</span> != y,</span><br><span class="line">    &#125;[op](processCnt, expectCnt)</span><br><span class="line">    <span class="keyword">return</span> judgeAns</span><br></pre></td></tr></table></figure></p><p><small>写的时候对lambda的认识：lambda后面紧跟的是<strong>形参</strong>，就是func(x, y)里面的x、y，冒号后面的是<strong>方法</strong>，就是func(…){method}里面的method</small></p><h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://blog.csdn.net/suiyunonghen/article/details/3734135" target="_blank" rel="noopener">Python中Swithch Case语法实现</a><br><a href="http://blog.csdn.net/mathboylinlin/article/details/9413551" target="_blank" rel="noopener">Python学习笔记（十二）：lambda表达式与函数式编程</a></p>]]></content>
-      
-      
-        <tags>
-            
-            <tag> Python </tag>
-            
-            <tag> lambda </tag>
+            <tag> GitHub </tag>
             
         </tags>
       
@@ -672,6 +680,23 @@
         <tags>
             
             <tag> Hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>lambda实现switch</title>
+      <link href="/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/"/>
+      <url>/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/</url>
+      <content type="html"><![CDATA[<p>根据输入的条件符号，对两个输入的数字进行表达式判断<br><a id="more"></a></p><h3 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h3><p>查了查网上资料，总体有三种方案实现：<br>1、<strong>字典+函数</strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">funcA</span><span class="params">(x)</span></span><span class="symbol">:</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line">...</span><br><span class="line">funcDict&#123;</span><br><span class="line">    <span class="string">'A'</span> : funcA,</span><br><span class="line">    <span class="string">'B'</span> : funcB,</span><br><span class="line">    <span class="string">'C'</span> : funcC</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line">funcDict.get(value, funcDefault)(x)</span><br></pre></td></tr></table></figure></p><p>2、<strong>字典+lambda</strong><br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lambdaDict&#123;</span><br><span class="line"><span class="code">    'A' : lambda x : x,</span></span><br><span class="line"><span class="code">    'B' : lambda x : x,</span></span><br><span class="line"><span class="code">    'C' : lambda x : x</span></span><br><span class="line">&#125;[<span class="string">value</span>](<span class="link">x</span>)</span><br></pre></td></tr></table></figure></p><p>3、Brian Beck提供了一个类 switch 来实现其他语言中switch的功能</p><p>由于要实现的功能是两个数之间根据输入的表达式来进行比较，所以选择了写起来比较简洁（自认为简洁）的lambda<br><strong>样例</strong><br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def opJudge(processCnt, op, expectCnt):</span><br><span class="line">    judgeAns = &#123;</span><br><span class="line">        <span class="string">'='</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> == y,</span><br><span class="line">        <span class="string">'&gt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt; y,</span><br><span class="line">        <span class="string">'&lt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt; y,</span><br><span class="line">        '&gt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt;= y,</span><br><span class="line">        '&lt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt;= y,</span><br><span class="line">        '!=' : <span class="type">lambda</span> x, y : <span class="type">x</span> != y,</span><br><span class="line">    &#125;[op](processCnt, expectCnt)</span><br><span class="line">    <span class="keyword">return</span> judgeAns</span><br></pre></td></tr></table></figure></p><p><small>写的时候对lambda的认识：lambda后面紧跟的是<strong>形参</strong>，就是func(x, y)里面的x、y，冒号后面的是<strong>方法</strong>，就是func(…){method}里面的method</small></p><h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://blog.csdn.net/suiyunonghen/article/details/3734135" target="_blank" rel="noopener">Python中Swithch Case语法实现</a><br><a href="http://blog.csdn.net/mathboylinlin/article/details/9413551" target="_blank" rel="noopener">Python学习笔记（十二）：lambda表达式与函数式编程</a></p>]]></content>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> lambda </tag>
             
         </tags>
       
