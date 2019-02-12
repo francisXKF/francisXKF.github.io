@@ -3,6 +3,31 @@
   
     
     <entry>
+      <title>OGG+Kafka-目标端配置</title>
+      <link href="/2019/02/12/OGG+Kafka-%E7%9B%AE%E6%A0%87%E7%AB%AF%E9%85%8D%E7%BD%AE/"/>
+      <url>/2019/02/12/OGG+Kafka-%E7%9B%AE%E6%A0%87%E7%AB%AF%E9%85%8D%E7%BD%AE/</url>
+      <content type="html"><![CDATA[<p>使用现有的镜像，新拉起一个OGG+Kafka容器环境，为新增业务做准备。<br><a id="more"></a></p><h1 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h1><p>使用已有镜像</p><h1 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h1><p>配置<code>docker-compose.yml</code>文件，修改端口号</p><h1 id="相关配置"><a href="#相关配置" class="headerlink" title="相关配置"></a>相关配置</h1><p>进入<code>OGG_HOME</code>目录</p><h2 id="创建OGG基本目录结构"><a href="#创建OGG基本目录结构" class="headerlink" title="创建OGG基本目录结构"></a>创建OGG基本目录结构</h2><p>初次配置OGG需要先创建基本目录结构：</p><blockquote><p>GGSCI (7add7fa1b405) 2&gt; edit param mgr<br>ERROR: Directory /usr/local/work/ogg/dirprm does not exist yet (use CREATE SUBDIRS).</p></blockquote><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">GGSCI (7add7fa1b405) 3&gt; create subdirs</span><br><span class="line"></span><br><span class="line">Creating subdirectories under current directory /usr/local/work/ogg</span><br><span class="line"></span><br><span class="line">Parameter file                 /usr/local/work/ogg/dirprm: created.</span><br><span class="line">Report file                    /usr/local/work/ogg/dirrpt: created.</span><br><span class="line">Checkpoint file                /usr/local/work/ogg/dirchk: created.</span><br><span class="line">Process status files           /usr/local/work/ogg/dirpcs: created.</span><br><span class="line">SQL script files               /usr/local/work/ogg/dirsql: created.</span><br><span class="line">Database definitions files     /usr/local/work/ogg/dirdef: created.</span><br><span class="line">Extract data files             /usr/local/work/ogg/dirdat: created.</span><br><span class="line">Temporary files                /usr/local/work/ogg/dirtmp: created.</span><br><span class="line">Credential store files         /usr/local/work/ogg/dircrd: created.</span><br><span class="line">Masterkey wallet files         /usr/local/work/ogg/dirwlt: created.</span><br><span class="line">Dump files                     /usr/local/work/ogg/dirdmp: created.</span><br></pre></td></tr></table></figure><h2 id="配置MGR进程"><a href="#配置MGR进程" class="headerlink" title="配置MGR进程"></a>配置MGR进程</h2><p>注意端口号与动态端口列表，要与容器绑定的端口一致。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GGSCI (7add7fa1b405) 4&gt; edit param mgr</span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 5&gt; view param mgr</span><br><span class="line"></span><br><span class="line">PORT 9839</span><br><span class="line">DYNAMICPORTLIST 9840-9939</span><br><span class="line">AUTORESTART EXTRACT *,RETRIES 5,WAITMINUTES 3</span><br><span class="line">PURGEOLDEXTRACTS ./dirdat/*,usecheckpoints, minkeepdays 3</span><br><span class="line">LAGREPORTHOURS 1</span><br><span class="line">LAGINFOMINUTES 30</span><br><span class="line">LAGCRITICALMINUTES 45</span><br></pre></td></tr></table></figure></p><h2 id="添加checkpoint表"><a href="#添加checkpoint表" class="headerlink" title="添加checkpoint表"></a>添加checkpoint表</h2><p>目前不知道这步有什么用……<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GGSCI (7add7fa1b405) 6&gt; edit params GLOBALS</span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 7&gt; view param GLOBALS</span><br><span class="line"></span><br><span class="line">GGSCHEMA ogg</span><br><span class="line">CHECKPOINTTABLE ogg.checkpoint_table</span><br></pre></td></tr></table></figure></p><h2 id="配置REP进程"><a href="#配置REP进程" class="headerlink" title="配置REP进程"></a>配置REP进程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">GGSCI (7add7fa1b405) 8&gt; add  REPLICAT rep_kf,exttrail ./dirdat/kf,CHECKPOINTTABLE ogg.checkpoint_table</span><br><span class="line">REPLICAT added.</span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 9&gt; info all</span><br><span class="line"></span><br><span class="line">Program     Status      Group       Lag at Chkpt  Time Since Chkpt</span><br><span class="line"></span><br><span class="line">MANAGER     STOPPED                                           </span><br><span class="line">REPLICAT    STOPPED     REP_KF      00:00:00      00:00:03    </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 10&gt; edit params rep_kf</span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 11&gt; view param rep_kf</span><br><span class="line"></span><br><span class="line">REPLICAT rep_kf</span><br><span class="line">sourcedefs /usr/local/work/ogg/ogg.t_file_info_all</span><br><span class="line">TARGETDB LIBFILE libggjava.so SET property=dirprm/kafka.props</span><br><span class="line">REPORTCOUNT EVERY 1 MINUTES, RATE</span><br><span class="line">GROUPTRANSOPS 10000</span><br><span class="line">MAP stl_zb.t_file_info*, TARGET stl_zb.t_file_info*;</span><br></pre></td></tr></table></figure><h2 id="配置Kafka相关参数"><a href="#配置Kafka相关参数" class="headerlink" title="配置Kafka相关参数"></a>配置Kafka相关参数</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@7add7fa1b405 ogg]# cd dirprm/</span><br><span class="line">[root@7add7fa1b405 dirprm]# ls</span><br><span class="line">globals.prm  mgr.prm  rep_kf.prm</span><br><span class="line">[root@7add7fa1b405 dirprm]# vi kafka.props</span><br><span class="line">[root@7add7fa1b405 dirprm]# cat kafka.props</span><br><span class="line">gg.handlerlist=kafkahandler</span><br><span class="line">gg.handler.kafkahandler.type=kafka</span><br><span class="line">gg.handler.kafkahandler.KafkaProducerConfigFile=custom_kafka_producer.properties</span><br><span class="line">gg.handler.kafkahandler.topicMappingTemplate=wjdata010</span><br><span class="line">gg.handler.kafkahandler.format=json</span><br><span class="line">gg.handler.kafkahandler.mode=op</span><br><span class="line">gg.classpath=dirprm/:/usr/local/work/kafka_2.11-2.0.0/libs/*:/usr/local/work/ogg/:/usr/local/work/ogg/lib/*</span><br><span class="line">[root@7add7fa1b405 dirprm]# vi custom_kafka_producer.properties</span><br><span class="line">[root@7add7fa1b405 dirprm]# cat custom_kafka_producer.properties</span><br><span class="line">bootstrap.servers=broker1:9092,broker2:9092,broker3:9092</span><br><span class="line">acks=1</span><br><span class="line">compression.type=gzip</span><br><span class="line">reconnect.backoff.ms=1000</span><br><span class="line">value.serializer=org.apache.kafka.common.serialization.ByteArraySerializer</span><br><span class="line">key.serializer=org.apache.kafka.common.serialization.ByteArraySerializer</span><br><span class="line">batch.size=102400</span><br><span class="line">linger.ms=10000</span><br></pre></td></tr></table></figure><h2 id="启动MGR、REP进程"><a href="#启动MGR、REP进程" class="headerlink" title="启动MGR、REP进程"></a>启动MGR、REP进程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">GGSCI (7add7fa1b405) 8&gt; start mgr     </span><br><span class="line">Manager started.</span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 9&gt; start REP_KF</span><br><span class="line"></span><br><span class="line">Sending START request to MANAGER ...</span><br><span class="line">REPLICAT REP_KF starting</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">GGSCI (7add7fa1b405) 10&gt; info all</span><br><span class="line"></span><br><span class="line">Program     Status      Group       Lag at Chkpt  Time Since Chkpt</span><br><span class="line"></span><br><span class="line">MANAGER     RUNNING                                           </span><br><span class="line">REPLICAT    RUNNING     REP_KF      00:00:00      00:00:01</span><br></pre></td></tr></table></figure><h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>等待验证</p><h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>旧有文档</p>]]></content>
+      
+      <categories>
+          
+          <category> 后台 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Docker </tag>
+            
+            <tag> OGG </tag>
+            
+            <tag> Kafka </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>JS-自定义事件触发在React中使用-高度自适应例</title>
       <link href="/2019/01/02/JS-%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8-%E9%AB%98%E5%BA%A6%E8%87%AA%E9%80%82%E5%BA%94%E4%BE%8B/"/>
       <url>/2019/01/02/JS-%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E5%9C%A8React%E4%B8%AD%E4%BD%BF%E7%94%A8-%E9%AB%98%E5%BA%A6%E8%87%AA%E9%80%82%E5%BA%94%E4%BE%8B/</url>
@@ -105,11 +130,11 @@
       
         <tags>
             
+            <tag> Docker </tag>
+            
             <tag> OGG </tag>
             
             <tag> Kafka </tag>
-            
-            <tag> Docker </tag>
             
         </tags>
       
@@ -130,9 +155,9 @@
       
         <tags>
             
-            <tag> Linux </tag>
-            
             <tag> Docker </tag>
+            
+            <tag> Linux </tag>
             
         </tags>
       
@@ -256,6 +281,21 @@
       <link href="/2018/06/27/%E6%97%A5%E5%BF%97/"/>
       <url>/2018/06/27/%E6%97%A5%E5%BF%97/</url>
       <content type="html"><![CDATA[<p>日志<br><a id="more"></a></p><h3 id="20180730"><a href="#20180730" class="headerlink" title="20180730"></a>20180730</h3><p>修改了一下maupassant的scss代码样式，包括：</p><ul><li><code>&lt;code&gt;</code>代码的底色</li><li><code>&lt;blockquote&gt;</code>引用的样式</li><li><code>&lt;img&gt;</code>图片由居中的<code>block</code>改为<code>inline</code>并取消上下高度调整</li></ul><h3 id="20180627"><a href="#20180627" class="headerlink" title="20180627"></a>20180627</h3><p>当发现为了赶进度不考虑模型设计、代码结构啥的，开发起来的速度贼快……God bless me do not let me modify these codes 2333</p><p>END……</p>]]></content>
+      
+      <categories>
+          
+          <category> Whisper </category>
+          
+      </categories>
+      
+      
+    </entry>
+    
+    <entry>
+      <title>日志</title>
+      <link href="/2018/06/27/%E6%97%A5%E5%BF%97-20190119/"/>
+      <url>/2018/06/27/%E6%97%A5%E5%BF%97-20190119/</url>
+      <content type="html"><![CDATA[<p>日志<br><a id="more"></a></p><p>大概从毕业起就没再动手写过这个东西了，把太吵的键盘拔了，还是用笔记本自带的巧克力吧。</p><blockquote><p>君子终日乾乾，夕惕若，厉，无咎。</p><p>背景音乐：网易云音乐：“100种人生的态度，有没有你的归宿？”</p></blockquote><p>这次要写的是如何解决矛盾……</p><h1 id="如何解决矛盾"><a href="#如何解决矛盾" class="headerlink" title="如何解决矛盾"></a>如何解决矛盾</h1><p>先进行范围圈定，只把矛盾限于人与人之间。</p><p>还搞不清矛盾的产生是咋个样子的，暂时跳过了。</p><p>以前总是觉得一旦某人跟自己说“深思过，有矛盾”，便会决绝的放弃<br>后来觉得啥矛盾解决不了，总有方法是可以解决的，多想想嘛<br>现在又成了应该有一些无法解决的矛盾，但是哪些才是呢……</p><p>以前认为矛盾是无法解决的，后来觉得矛盾是可以解决的，现在又觉得矛盾是有可能无法解决的……</p><p>是否可以将矛盾看做是舞台上的一场高潮迭起的剧：  </p><ul><li>矛盾的相关者为剧目的人物，直接冲突对象是剧目的主角  </li><li>矛盾的潜在如同剧目的背景</li><li>矛盾的发生作为剧目的开头</li><li>随着主角之间矛盾的升级扩大，剧目随之发展进入高潮</li><li>矛盾的解决，剧目落场</li></ul><p>人生如戏</p><p>以前一直不懂，为什么以史为镜，可以知兴替，以人为镜，可以明得失。<br>也是有一天刷牙才大概想明白了一点，统一的物质世界中的事物都处在相互作用的普遍联系中，任何事物都是因为某些矛盾因素集A产生，又因为某些因素集B发展，最后由于因素集C结束。  </p><p>剧也是事物，矛盾可以参考剧，那么矛盾的解决大概就有了方案：改变矛盾因素集。<br>改变矛盾因素集的方式感觉有两种：一是规避，二是调整。<br><strong>规避</strong>：删除因素集，在剧中消除某个矛盾发生发展的最简单方式是删除主角，做到物是人非事事休。<br>这大概最简单也最需要远见，消除主角或者主要事物意味着现有的主线消失，以后的主线走向更加不明朗。<br>一般要思考到目前主线发展确实无可奈何或者完全变更主线有着更好的前景才会采用这种方式吧。<br><strong>调整</strong>：增改因素集，如果有大智慧，可以修改集A中包含的主角、矛盾产生的基本因素等，看起来是直接修改了剧目的背景与开头；<br>退而求其次，修改B，费时费力分析出矛盾的主要原因，捋清哪些因素是关键，通过调整关键因素达到矛盾的解决，剧目最精彩的在此；<br>最终，可能有一些无法改变的因素，恰恰是矛盾的主因，归于C中了，除非顿悟啥的，要不然矛盾无法解决了，基本完蛋了。</p><p>不过一般很少碰到小人国吃蛋的那种无法解决的矛盾……</p><p>矛盾调整的实操可能得要主角之间不断进行讨论验证才能明确主因的所在。可能会因为因素很多，互相缠绕，捋起来并不容易，也会因为一些以前从未关注过的点而高潮迭起，这大概也是“金牌调解”之类的剧比较火的原因吧……</p><p>但是从矛盾的普遍性来看，每个事物发展的过程中总是要经历矛盾运动，解决掉一个之后总会遇到下一个……</p><p>以人生角度来看，矛盾的发展与解决，构成了独一无二的精彩。</p><p>我觉得得多看书，要不然自以为是容易误入歧途……</p>]]></content>
       
       <categories>
           
@@ -679,26 +719,9 @@
       
         <tags>
             
-            <tag> GitHub </tag>
-            
             <tag> Hexo </tag>
             
-        </tags>
-      
-    </entry>
-    
-    <entry>
-      <title>lambda实现switch</title>
-      <link href="/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/"/>
-      <url>/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/</url>
-      <content type="html"><![CDATA[<p>根据输入的条件符号，对两个输入的数字进行表达式判断<br><a id="more"></a></p><h3 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h3><p>查了查网上资料，总体有三种方案实现：<br>1、<strong>字典+函数</strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">funcA</span><span class="params">(x)</span></span><span class="symbol">:</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line">...</span><br><span class="line">funcDict&#123;</span><br><span class="line">    <span class="string">'A'</span> : funcA,</span><br><span class="line">    <span class="string">'B'</span> : funcB,</span><br><span class="line">    <span class="string">'C'</span> : funcC</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line">funcDict.get(value, funcDefault)(x)</span><br></pre></td></tr></table></figure></p><p>2、<strong>字典+lambda</strong><br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lambdaDict&#123;</span><br><span class="line"><span class="code">    'A' : lambda x : x,</span></span><br><span class="line"><span class="code">    'B' : lambda x : x,</span></span><br><span class="line"><span class="code">    'C' : lambda x : x</span></span><br><span class="line">&#125;[<span class="string">value</span>](<span class="link">x</span>)</span><br></pre></td></tr></table></figure></p><p>3、Brian Beck提供了一个类 switch 来实现其他语言中switch的功能</p><p>由于要实现的功能是两个数之间根据输入的表达式来进行比较，所以选择了写起来比较简洁（自认为简洁）的lambda<br><strong>样例</strong><br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def opJudge(processCnt, op, expectCnt):</span><br><span class="line">    judgeAns = &#123;</span><br><span class="line">        <span class="string">'='</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> == y,</span><br><span class="line">        <span class="string">'&gt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt; y,</span><br><span class="line">        <span class="string">'&lt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt; y,</span><br><span class="line">        '&gt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt;= y,</span><br><span class="line">        '&lt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt;= y,</span><br><span class="line">        '!=' : <span class="type">lambda</span> x, y : <span class="type">x</span> != y,</span><br><span class="line">    &#125;[op](processCnt, expectCnt)</span><br><span class="line">    <span class="keyword">return</span> judgeAns</span><br></pre></td></tr></table></figure></p><p><small>写的时候对lambda的认识：lambda后面紧跟的是<strong>形参</strong>，就是func(x, y)里面的x、y，冒号后面的是<strong>方法</strong>，就是func(…){method}里面的method</small></p><h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://blog.csdn.net/suiyunonghen/article/details/3734135" target="_blank" rel="noopener">Python中Swithch Case语法实现</a><br><a href="http://blog.csdn.net/mathboylinlin/article/details/9413551" target="_blank" rel="noopener">Python学习笔记（十二）：lambda表达式与函数式编程</a></p>]]></content>
-      
-      
-        <tags>
-            
-            <tag> Python </tag>
-            
-            <tag> lambda </tag>
+            <tag> GitHub </tag>
             
         </tags>
       
@@ -720,6 +743,23 @@
         <tags>
             
             <tag> Hexo </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>lambda实现switch</title>
+      <link href="/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/"/>
+      <url>/2018/02/08/lambda%E5%AE%9E%E7%8E%B0switch/</url>
+      <content type="html"><![CDATA[<p>根据输入的条件符号，对两个输入的数字进行表达式判断<br><a id="more"></a></p><h3 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h3><p>查了查网上资料，总体有三种方案实现：<br>1、<strong>字典+函数</strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">funcA</span><span class="params">(x)</span></span><span class="symbol">:</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line">...</span><br><span class="line">funcDict&#123;</span><br><span class="line">    <span class="string">'A'</span> : funcA,</span><br><span class="line">    <span class="string">'B'</span> : funcB,</span><br><span class="line">    <span class="string">'C'</span> : funcC</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line">funcDict.get(value, funcDefault)(x)</span><br></pre></td></tr></table></figure></p><p>2、<strong>字典+lambda</strong><br><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lambdaDict&#123;</span><br><span class="line"><span class="code">    'A' : lambda x : x,</span></span><br><span class="line"><span class="code">    'B' : lambda x : x,</span></span><br><span class="line"><span class="code">    'C' : lambda x : x</span></span><br><span class="line">&#125;[<span class="string">value</span>](<span class="link">x</span>)</span><br></pre></td></tr></table></figure></p><p>3、Brian Beck提供了一个类 switch 来实现其他语言中switch的功能</p><p>由于要实现的功能是两个数之间根据输入的表达式来进行比较，所以选择了写起来比较简洁（自认为简洁）的lambda<br><strong>样例</strong><br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def opJudge(processCnt, op, expectCnt):</span><br><span class="line">    judgeAns = &#123;</span><br><span class="line">        <span class="string">'='</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> == y,</span><br><span class="line">        <span class="string">'&gt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt; y,</span><br><span class="line">        <span class="string">'&lt;'</span> : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt; y,</span><br><span class="line">        '&gt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &gt;= y,</span><br><span class="line">        '&lt;=' : <span class="type">lambda</span> x, y : <span class="type">x</span> &lt;= y,</span><br><span class="line">        '!=' : <span class="type">lambda</span> x, y : <span class="type">x</span> != y,</span><br><span class="line">    &#125;[op](processCnt, expectCnt)</span><br><span class="line">    <span class="keyword">return</span> judgeAns</span><br></pre></td></tr></table></figure></p><p><small>写的时候对lambda的认识：lambda后面紧跟的是<strong>形参</strong>，就是func(x, y)里面的x、y，冒号后面的是<strong>方法</strong>，就是func(…){method}里面的method</small></p><h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="http://blog.csdn.net/suiyunonghen/article/details/3734135" target="_blank" rel="noopener">Python中Swithch Case语法实现</a><br><a href="http://blog.csdn.net/mathboylinlin/article/details/9413551" target="_blank" rel="noopener">Python学习笔记（十二）：lambda表达式与函数式编程</a></p>]]></content>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> lambda </tag>
             
         </tags>
       
