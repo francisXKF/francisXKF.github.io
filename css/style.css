@@ -235,7 +235,7 @@ div {
       margin: 0 0 1.234em; }
       .post .post-content p code {
         display: inline-block;
-        margin: 0 5px;
+        margin: 2px 5px;
         padding: 0 5px;
         background: #FFC0CB; }
       .post .post-content p a {
@@ -268,8 +268,8 @@ div {
         margin: 0; }
       .post .post-content ul code, .post .post-content ol code {
         display: inline-block;
-        margin: 0 5px;
-        padding: 0px 5px;
+        margin: 2px 5px;
+        padding: 0 5px;
         background: #FFC0CB; }
       .post .post-content ul a, .post .post-content ol a {
         color: #01579f;
